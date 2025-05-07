@@ -1,4 +1,4 @@
-# Scrapy settings for MiniPreco project
+# Scrapy settings for Sao_Roque02 project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -7,14 +7,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = "MiniPreco"
+BOT_NAME = "markets"
 
-SPIDER_MODULES = ["MiniPreco.spiders"]
-NEWSPIDER_MODULE = "MiniPreco.spiders"
+SPIDER_MODULES = ["markets.spiders"]
+NEWSPIDER_MODULE = "markets.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = "MiniPreco (+http://www.yourdomain.com)"
+#USER_AGENT = "Sao_Roque02 (+http://www.yourdomain.com)"    
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -45,13 +45,13 @@ ROBOTSTXT_OBEY = True
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    "MiniPreco.middlewares.MiniprecoSpiderMiddleware": 543,
+#    "Sao_Roque02.middlewares.SaoRoque02SpiderMiddleware": 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    "MiniPreco.middlewares.MiniprecoDownloaderMiddleware": 543,
+#    "Sao_Roque02.middlewares.SaoRoque02DownloaderMiddleware": 543,
 #}
 
 # Enable or disable extensions
@@ -62,9 +62,9 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {
-    "MiniPreco.pipelines.MiniprecoPipeline": 300,
-}
+#ITEM_PIPELINES = {
+#    "Sao_Roque02.pipelines.SaoRoque02Pipeline": 300,
+#}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
