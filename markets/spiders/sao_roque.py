@@ -5,6 +5,7 @@ class SaoRoqueSpider(scrapy.Spider):
     name = "sao_roque"
     domains = "https://supersaoroque.com.br"
     store_dict = {}
+    list_id = []
 
     def start_requests(self):
         yield scrapy.Request(
@@ -26,18 +27,56 @@ class SaoRoqueSpider(scrapy.Spider):
                 "uf": data["uf"],
                 "cep": data["cep"]
             }   
+            self.list_id.append(store_id
+                                )
         yield scrapy.Request(
             url=f"{self.domains}/maxipos_rest/rest/depto/loja/42?nocache=1746648173568",
-            method="GET",
+            method="GET",       
             callback=self.category
         )
 
 
     def category(self, response):
-        data_json = response.json() 
-        for data in data_json["deptos"]:
-            category_id = data["codigo"]
-            print(category_id)
+      
+        for store_id in self.list_id:
+            data_json = response.json() 
 
-    def parse(self, response):
-        pass
+            for data in data_json["deptos"]:
+                category_id = data["codigo"]
+                
+                yield from self.request_products(store_id, category_id)
+
+    def request_products(self, store_id, category_id, page=1):
+        yield scrapy.Request(
+            url=f"{self.domains}/maxipos_rest/rest/produto?p={page}&l=60&lj={store_id}&t=1&n1={category_id}&nocache=1746650469488",
+            method="GET",
+            callback=self.products,
+            meta={
+                "page": page,
+                "category": category_id
+            }
+        )
+
+    def products(self, response):
+        data_json = response.json()
+        meta = response.meta
+        page = meta["page"]
+        category_id = meta["category"]
+
+        for store_id in self.list_id:
+        
+            for items in data_json["produtos"]:
+                stock = items["indisponivel"]
+                if stock == 1:
+                    continue
+
+                data_products = {
+                    "name": items["descricao"],
+                    "code": items["codigo"],
+                    "ean": items["ean"],
+                    "price": items["preco"],
+                    "promotion": items["precode"]
+                }
+                print(data_products)
+        if data_json != []:
+            yield from self.request_products(store_id, category_id, page+1)
