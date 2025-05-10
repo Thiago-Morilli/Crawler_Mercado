@@ -5,7 +5,8 @@ class SaoRoqueSpider(scrapy.Spider):
     name = "pingo_doce"
     domains = "https://mercadao.pt"
     headers = {"user-agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36"}
-   
+    data_stores = {}
+    data_category = {}
 
 
     def start_requests(self):
@@ -17,24 +18,33 @@ class SaoRoqueSpider(scrapy.Spider):
         )
 
     def store_data(self, response):
-        for data_json in response.json():
-
-            collecting_stores = {
-                    "id": data_json["_id"],
-                    "name": data_json["name"],
-                    "streetName": data_json["streetName"],
-                    "city": data_json["city"],
-                    "zipCode": data_json["zipCode"]
+        for data in response.json():
+            stores_id = data["_id"]
+            self.data_stores[stores_id] = {     
+                    "name": data["name"],
+                    "streetName": data["streetName"],
+                    "city": data["city"],
+                    "zipCode": data["zipCode"],
+                    "brandId": data["brandId"],
+                    "catalogueId": data["catalogueId"],
+                    "department": data["brand"]["department"]
                 }
             
-            yield scrapy.Request(
-                url=f"{self.domains}/api/banners/getBanners?type=CATEGORY_HEADER&brand=59d39b29ef6ad4002836d627&pickingLocation=5b26e01679d664001ec65844&catalogueCategoryId=61eedde8fd2bff003f508138",
+        yield from self.request_category()                
+
+    def request_category(self):
+  
+        yield scrapy.Request(
+                url=f"{self.domains}/api/catalogues/6107d28d72939a003ff6bf51/with-descendants",
                 method="GET",
                 callback=self.category,
                 headers=self.headers
             )
 
-
     def category(self, response):
         data_json = response.json()
-        print(data_json)
+        #category_id = data_json["tree"]
+        """self.data_category = {
+                    "name": category_id["name"] 
+        }"""
+    
