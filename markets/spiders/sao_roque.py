@@ -21,7 +21,7 @@ class SaoRoqueSpider(scrapy.Spider):
             store_id = data["codigo"]
             self.store_dict[store_id] = {
                 "name": data["nome"],
-                "address": data["endereco"],
+                "address": data["endereco"],    
                 "neighborhood": data["bairro"],     
                 "city": data["cidade"],
                 "uf": data["uf"],
@@ -77,6 +77,6 @@ class SaoRoqueSpider(scrapy.Spider):
                     "price": items["preco"],
                     "promotion": items["precode"]
                 }
-                print(data_products)
+                
         if data_json != []:
             yield from self.request_products(store_id, category_id, page+1)
