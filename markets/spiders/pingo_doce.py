@@ -6,8 +6,7 @@ class SaoRoqueSpider(scrapy.Spider):
     domains = "https://mercadao.pt"
     headers = {"user-agent": "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Mobile Safari/537.36"}
     data_stores = {}
-    data_category = {}
-
+   
 
     def start_requests(self):
         yield scrapy.Request(
@@ -43,8 +42,10 @@ class SaoRoqueSpider(scrapy.Spider):
 
     def category(self, response):
         data_json = response.json()
-        #category_id = data_json["tree"]
-        """self.data_category = {
-                    "name": category_id["name"] 
-        }"""
-    
+        category_id = data_json["tree"]
+        for id in category_id:
+            data_category = {
+                        "name": data_json["tree"][id]["name"] 
+            }
+          
+        

@@ -16,7 +16,7 @@ class SaoRoqueSpider(scrapy.Spider):
 
     def store_data(self, response):
         data_json = response.json()
-
+    
         for data in data_json:
             store_id = data["codigo"]
             self.store_dict[store_id] = {
