@@ -16,7 +16,7 @@ class SaoRoqueSpider(scrapy.Spider):
 
     def store_data(self, response):
         data_json = response.json()
-    
+                
         for data in data_json:
             store_id = data["codigo"]
             self.store_dict[store_id] = {
@@ -58,25 +58,27 @@ class SaoRoqueSpider(scrapy.Spider):
         )
 
     def products(self, response):
+                                   
         data_json = response.json()
         meta = response.meta
         page = meta["page"]
         category_id = meta["category"]
 
-        for store_id in self.list_id:
         
-            for items in data_json["produtos"]:
-                stock = items["indisponivel"]
-                if stock == 1:
-                    continue
+        for items in data_json["produtos"]:
+            stock = items["indisponivel"]
+            if stock == 1:
+                continue
 
-                data_products = {
-                    "name": items["descricao"],
-                    "code": items["codigo"],
-                    "ean": items["ean"],
-                    "price": items["preco"],
-                    "promotion": items["precode"]
-                }
-                
-        if data_json != []:
-            yield from self.request_products(store_id, category_id, page+1)
+            data_products = {
+                "name": items["descricao"],
+                "code": items["codigo"],
+                "ean": items["ean"],
+                "price": items["preco"],
+                "promotion": items["precode"]
+            }
+            print(data_products)
+
+        for store_id in self.list_id:
+            if data_json != []:
+                yield from self.request_products(store_id, category_id, page+1)
