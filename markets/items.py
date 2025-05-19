@@ -1,12 +1,11 @@
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/items.html
 
 import scrapy
 
 
-class SaoRoque02Item(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class SaoRoque02Item(scrapy.Item): 
+    name = scrapy.Field()
+    code = scrapy.Field()
+    ean = scrapy.Field()
+    price = scrapy.Field()
+    promotion = scrapy.Field()
+    

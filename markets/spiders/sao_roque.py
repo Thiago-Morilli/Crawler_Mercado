@@ -1,4 +1,5 @@
 import scrapy
+from markets.items import SaoRoque02Item
 
 
 class SaoRoqueSpider(scrapy.Spider):
@@ -77,7 +78,10 @@ class SaoRoqueSpider(scrapy.Spider):
                 "price": items["preco"],
                 "promotion": items["precode"]
             }
-            print(data_products)
+
+            yield SaoRoque02Item(
+                data_products
+            )
 
         for store_id in self.list_id:
             if data_json != []:
