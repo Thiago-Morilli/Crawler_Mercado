@@ -19,6 +19,7 @@ class SaoRoqueSpider(scrapy.Spider):
     def store_data(self, response):
         for data in response.json():
             stores_id = data["_id"]
+            print(stores_id)
             self.data_stores[stores_id] = {     
                     "name": data["name"],
                     "streetName": data["streetName"],
@@ -28,7 +29,7 @@ class SaoRoqueSpider(scrapy.Spider):
                     "catalogueId": data["catalogueId"],
                     "department": data["brand"]["department"]
                 }
-            
+    
         yield from self.request_category()                
 
     def request_category(self):
@@ -44,8 +45,48 @@ class SaoRoqueSpider(scrapy.Spider):
         data_json = response.json()
         category_id = data_json["tree"]
         for id in category_id:
-            data_category = {
-                        "name": data_json["tree"][id]["name"] 
+            yield from self.request_products(id)
+            
+    def request_products(self, id, page=0):
+        yield scrapy.Request(
+            url=f"{self.domains}/api/catalogues/6107d28d72939a003ff6bf51/products/search?mainCategoriesIds=%5B%22{id}%22%5D&sort=%7B%22activePromotion%22:%22desc%22%7D&from={page}&size=100&esPreference=0.24913664298082105",
+            method="GET",
+            callback=self.products,
+            headers=self.headers,
+            meta={
+                "page": page,
+                "id": id
             }
-          
+    )
+
+    def products(self, response):
+        data_json = response.json()
+        meta = response.meta
+        page = meta["page"]
+        id = meta["id"]
         
+        for items in data_json["sections"]["null"]["products"]:
+
+            fixed_price = items["_source"]["regularPrice"]
+            promotional_value = items["_source"]["buyingPrice"]
+
+            if promotional_value < fixed_price:
+                promotional = promotional_value
+
+            else:
+                promotional = None
+
+            
+            data_products= {
+                "name": items["_source"]["firstName"],
+                "fixed_price": fixed_price,
+                "promotional_value": promotional,
+                "eans": items["_source"]["eans"]
+            }
+           
+
+        
+        #yield from self.request_products(id, page+100)
+        
+
+
