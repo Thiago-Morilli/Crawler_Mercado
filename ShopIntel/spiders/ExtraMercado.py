@@ -11,43 +11,37 @@ class PrecoHunterSpider(scrapy.Spider):
             "Content-Type": "application/json",
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36"
         } 
+    
 
     
-    def start_requests(self, page=1):
+    def start_requests(self):
+
+        yield scrapy.Request(
+            url="https://api.vendas.gpa.digital/ex/v3/products/categories/ecom?storeId=483&split=&showSub=true",
+            method="GET",
+            callback=self.category,
+            
+        )
+
+    def category(self, response):
+        
+        for data in response.json()["content"]:
+
+            yield from self.request_product(data["uiLink"])
+        
+
+    def request_product(self, category, page=670):
         payload = {
                 "partner": "linx",
                 "page": page,
                 "resultsPerPage": 12,
-                "multiCategory": "alimentos",
+                "multiCategory": category,
                 "sortBy": "relevance",
                 "storeId": 483,
                 "customerPlus": True,
                 "department": "ecom"
             }
 
-        yield scrapy.Request(
-            url="https://api.vendas.gpa.digital/ex/v3/products/categories/ecom?storeId=483&split=&showSub=true",
-            method="GET",
-            callback=self.category,
-            meta = {
-                "payload": payload,
-                "page": page
-            }
-        )
-
-
-    def category(self, response):
-        meta = response.meta
-        payload = meta["payload"]
-        page = meta["page"]
-    
-       
-        for data in response.json()["content"]:
-
-            data_category = {
-                "link": data["uiLink"],
-                "id": data["id"]
-            }
 
         yield scrapy.Request(
             url="https://api.vendas.gpa.digital/ex/search/category-page",
@@ -56,13 +50,14 @@ class PrecoHunterSpider(scrapy.Spider):
             body=json.dumps(payload),
             callback=self.products,
             meta= {
-                "payload": payload,
+                "category": category,
                 "page": page
             }
         )
 
     def products(self, response):
         meta = response.meta
+        category = meta["category"]
         page = meta["page"]
         
         for item in response.json()["products"]:
@@ -87,5 +82,11 @@ class PrecoHunterSpider(scrapy.Spider):
                 "pricefrom": offer
 
             }
-        yield from self.start_requests(page+1)
+
+        next_page = response.json()["totalPages"]
+
+        if page != next_page:
+            print("**********************************************")
+            print(page)
+            yield from self.request_product(category, page+1)
 
