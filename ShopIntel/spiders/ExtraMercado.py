@@ -13,22 +13,7 @@ class PrecoHunterSpider(scrapy.Spider):
         } 
 
     
-    def start_requests(self):
-  
-
-        yield scrapy.Request(
-            url="https://api.vendas.gpa.digital/ex/v3/products/categories/ecom?storeId=483&split=&showSub=true",
-            method="GET",
-            callback=self.category,
-            
-        )
-    
-
-    def payload(self, page=1):
-        print("«««««««««««««««««««««««««««««««")
-        print(page)
-        print("*********************************")
-        
+    def start_requests(self, page=1):
         payload = {
                 "partner": "linx",
                 "page": page,
@@ -39,11 +24,23 @@ class PrecoHunterSpider(scrapy.Spider):
                 "customerPlus": True,
                 "department": "ecom"
             }
-        
-        yield from self.category(payload)
+
+        yield scrapy.Request(
+            url="https://api.vendas.gpa.digital/ex/v3/products/categories/ecom?storeId=483&split=&showSub=true",
+            method="GET",
+            callback=self.category,
+            meta = {
+                "payload": payload,
+                "page": page
+            }
+        )
 
 
-    def category(self, response, payload):
+    def category(self, response):
+        meta = response.meta
+        payload = meta["payload"]
+        page = meta["page"]
+    
        
         for data in response.json()["content"]:
 
@@ -51,8 +48,6 @@ class PrecoHunterSpider(scrapy.Spider):
                 "link": data["uiLink"],
                 "id": data["id"]
             }
-        
-        yield from self.payload()
 
         yield scrapy.Request(
             url="https://api.vendas.gpa.digital/ex/search/category-page",
@@ -69,7 +64,6 @@ class PrecoHunterSpider(scrapy.Spider):
     def products(self, response):
         meta = response.meta
         page = meta["page"]
-
         
         for item in response.json()["products"]:
             offer = None
@@ -93,4 +87,5 @@ class PrecoHunterSpider(scrapy.Spider):
                 "pricefrom": offer
 
             }
-        yield from self.payload(page+1)
+        yield from self.start_requests(page+1)
+
