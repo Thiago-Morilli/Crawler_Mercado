@@ -1,5 +1,6 @@
 import scrapy
 import json
+from ShopIntel.items import ShopintelItem
 
 
 class PrecoHunterSpider(scrapy.Spider):
@@ -30,7 +31,7 @@ class PrecoHunterSpider(scrapy.Spider):
             yield from self.request_product(data["uiLink"])
         
 
-    def request_product(self, category, page=670):
+    def request_product(self, category, page=1):
         payload = {
                 "partner": "linx",
                 "page": page,
@@ -83,10 +84,13 @@ class PrecoHunterSpider(scrapy.Spider):
 
             }
 
+        yield ShopintelItem(
+            product_data
+        )
+            
+
         next_page = response.json()["totalPages"]
 
         if page != next_page:
-            print("**********************************************")
-            print(page)
             yield from self.request_product(category, page+1)
 

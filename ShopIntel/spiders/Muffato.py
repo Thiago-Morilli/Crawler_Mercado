@@ -15,5 +15,5 @@ class PrecoHunterSpider(scrapy.Spider):
         )
 
     def category(self, response):
-        print(response.json())
+        print(response.json()[0])
        
