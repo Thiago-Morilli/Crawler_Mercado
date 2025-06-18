@@ -55,7 +55,7 @@ class PrecoHunterSpider(scrapy.Spider):
         page = response.xpath('//div[@class="input-qtd"]/div[@id="ctl00_conteudo_pnlPaginaProximaRodape"]/a/@href').get()
 
         if page != None:
-            print(page)
+            
             yield from self.request_page(page)
 
   
