@@ -44,21 +44,26 @@ class PrecoHunterSpider(scrapy.Spider):
             
     def products(self, response):
         offer = None
-     
         get_price = response.xpath('//div[@class="column main"]/div[@class="product-info-main"]').get()
-
+        
         if "old-price" in get_price:
-            price = response.xpath('//div[@class="column main"]/div[@class="product-info-main"]/div[@class="product-info-price"]/div/span[@class="old-price"]/span/span/span/text()').get()
-            offer = response.xpath('//div[@class="column main"]/div[@class="product-info-main"]/div[@class="product-info-price"]/div/span[@class="special-price"]/span/span/span/text()').get()
+            offer = response.xpath('//div[@class="column main"]/div[@class="product-info-main"]/div[@class="product-info-price"]/div/span[@class="old-price"]/span/span/span/text()').get().replace("R$\xa0", "")
+            special_price = response.xpath('//div[@class="column main"]/div[@class="product-info-main"]/div[@class="product-info-price"]/div/span[@class="special-price"]/span/span/span/text()').get().replace("R$\xa0", "")
+            
 
+            if offer != special_price:
+                price = special_price
+                
+                
         else:
-            price = response.xpath('//div[@class="column main"]/div[@class="product-info-main"]/div[@class="product-info-price"]/div/span/span/span/text()').get()
+            price = response.xpath('//div[@class="column main"]/div[@class="product-info-main"]/div[@class="product-info-price"]/div/span/span/span/text()').get().replace("R$\xa0", "")
            
+
 
         data_products = {
                 "name": response.xpath('//div[@class="column main"]/div[@class="product-info-main"]/div/h1/span/text()').get(),
-                "price": offer,
-                "pricefrom": price
+                "price": price,
+                "pricefrom": offer
 
             }
         print(data_products)
