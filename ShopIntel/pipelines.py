@@ -19,22 +19,24 @@ class ShopintelPipeline:
             id INT,
             sku VARCHAR(50),
             price INT,
-            pricefrom INT(20)
+            pricefrom INT,
+            ean VARCHAR(200)
             )''' 
         )
 
         db_connection.commit()      
 
         insert_query = """
-                        INSERT INTO  Markets(name, id, sku, price, pricefrom)
-                        VALUES (%s, %s, %s, %s, %s)""" 
+                        INSERT INTO  Markets(name, id, sku, price, pricefrom, ean)
+                        VALUES (%s, %s, %s, %s, %s, %s)""" 
         
         cursor.execute(insert_query, [
                 item["name"],
                 item["id"],
                 item["sku"],
                 item["price"],
-                item["pricefrom"]
+                item["pricefrom"],
+                item["ean"]
 
         ])
         db_connection.commit()

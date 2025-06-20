@@ -8,4 +8,5 @@ class ShopintelItem(scrapy.Item):
     sku = scrapy.Field()
     price = scrapy.Field()
     pricefrom = scrapy.Field()
+    ean = scrapy.Field()
 
