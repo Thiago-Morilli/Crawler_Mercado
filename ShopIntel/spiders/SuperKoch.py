@@ -55,7 +55,8 @@ class PrecoHunterSpider(scrapy.Spider):
         get_price = response.xpath('//div[@class="column main"]/div[@class="product-info-main"]').get()
         
         if "old-price" in get_price:
-            offer = response.xpath('//div[@class="column main"]/div[@class="product-info-main"]/div[@class="product-info-price"]/div/span[@class="old-price"]/span/span/span/text()').get().replace("R$\xa0", "")
+            offer = response.xpath('//div[@class="column main"]/div[@class="product-info-main"]/div[@class="product-info-price"]/div/span[@class="old-price"]/span/span/span/text()').get().replace("R$\xa0", "").replace(",",".")
+           
             special_price = response.xpath('//div[@class="column main"]/div[@class="product-info-main"]/div[@class="product-info-price"]/div/span[@class="special-price"]/span/span/span/text()').get().replace("R$\xa0", "")
             
 
@@ -75,11 +76,11 @@ class PrecoHunterSpider(scrapy.Spider):
             else:
                 ean = None
 
-        id = None 
+        id = None
         data_products = {
                 "name": response.xpath('//div[@class="column main"]/div[@class="product-info-main"]/div/h1/span/text()').get(),
                 "price": price.replace(",","."),
-                "pricefrom": offer.replace(",","."),
+                "pricefrom": offer,
                 "sku": response.xpath('//div[@class="column main"]/div[@class="product-info-main"]/div[@class="product-info-price"]/div[@class="product-info-stock-sku"]/div[@class="product attribute sku"]/div/text()').get(),
                 "ean": ean,
                 "id": id
