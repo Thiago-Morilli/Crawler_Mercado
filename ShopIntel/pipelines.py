@@ -6,15 +6,17 @@ class ShopintelPipeline:
 
     def process_item(self, item, spider):
 
-        self.save_mysql(item)
+        self.save_mysql(item, spider)
 
-    def save_mysql(self, item):
+    def save_mysql(self, item, spider):
         connector = Mysql_Connector.Connection()
         cursor = connector[0]
         db_connection = connector[1]
 
+        self.name = spider.name
+
         cursor.execute(
-           '''CREATE TABLE IF NOT EXISTS Markets(
+           f'''CREATE TABLE IF NOT EXISTS {self.name}(
             name VARCHAR(200), 
             id INT,
             sku VARCHAR(50),
@@ -26,8 +28,8 @@ class ShopintelPipeline:
 
         db_connection.commit()      
 
-        insert_query = """
-                        INSERT INTO  Markets(name, id, sku, price, pricefrom, ean)
+        insert_query = f"""
+                        INSERT INTO  {self.name}(name, id, sku, price, pricefrom, ean)
                         VALUES (%s, %s, %s, %s, %s, %s)""" 
         
         cursor.execute(insert_query, [
