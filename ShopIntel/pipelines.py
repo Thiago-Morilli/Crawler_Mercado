@@ -33,12 +33,12 @@ class ShopintelPipeline:
                         VALUES (%s, %s, %s, %s, %s, %s)""" 
         
         cursor.execute(insert_query, [
-                item["name"],
-                item["id"],
-                item["sku"],
-                item["price"],
-                item["pricefrom"],
-                item["ean"]
+                item.get("name"),
+                item.get("id"),
+                item.get("sku"),
+                item.get("price"),
+                item.get("pricefrom"),
+                item.get("ean")
 
         ])
         db_connection.commit()
