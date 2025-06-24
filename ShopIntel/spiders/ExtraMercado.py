@@ -57,6 +57,7 @@ class PrecoHunterSpider(scrapy.Spider):
         )
 
     def products(self, response):
+       
         meta = response.meta
         category = meta["category"]
         page = meta["page"]
@@ -64,17 +65,16 @@ class PrecoHunterSpider(scrapy.Spider):
         for item in response.json()["products"]:
             offer = None
             price = item["price"]
+    
 
-            if "productPromotions" in item:
-                for Promotions in item["productPromotions"]:
-                    price = Promotions["unitPrice"]
-
-                pricefrom = item["price"]
-
-                if price < pricefrom:
-                    offer = pricefrom
+            if "priceFrom" in item:
                 
-                
+                price_offer = item["priceFrom"]
+
+                if price_offer != price:
+                    offer = price_offer
+  
+                     
             product_data = {
                 "id": item["id"],
                 "name": item["name"],
@@ -84,13 +84,15 @@ class PrecoHunterSpider(scrapy.Spider):
 
             }
 
-        yield ShopintelItem(
-            product_data
-        )
             
 
-        next_page = response.json()["totalPages"]
+            yield ShopintelItem(
+                    product_data
+                )
+                
 
-        if page != next_page:
-            yield from self.request_product(category, page+1)
+            next_page = response.json()["totalPages"]
+
+            if page != next_page:
+                yield from self.request_product(category, page+1)
 

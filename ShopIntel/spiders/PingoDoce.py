@@ -82,6 +82,8 @@ class PrecoHunterSpider(scrapy.Spider):
                 "promotion": promotion,
                 "eans": items["_source"]["eans"]
             }
+
+            
            
         
             

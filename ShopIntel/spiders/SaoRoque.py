@@ -1,4 +1,6 @@
 import scrapy
+from ShopIntel.items import ShopintelItem
+
 
 class PrecoHunterSpider(scrapy.Spider):
     name = "sao_roque"
@@ -63,20 +65,33 @@ class PrecoHunterSpider(scrapy.Spider):
         page = meta["page"]
         category_id = meta["category"]
 
-        
+        offer = None
         for items in data_json["produtos"]:
             stock = items["indisponivel"]
             if stock == 1:
                 continue
+            
+            price = items["preco"]
+
+            precode = items["precode"]
+
+            if precode != 0.0:
+                price = precode
+
+                if price != precode:
+                    offer = precode
 
             data_products = {
                 "name": items["descricao"],
-                "code": items["codigo"],
+                "id": items["codigo"],
                 "ean": items["ean"],
-                "price": items["preco"],
-                "promotion": items["precode"]
+                "price": price,
+                "pricefrom": offer
             }
-
+          
+            yield ShopintelItem(
+                data_products
+            )
          
 
         for store_id in self.list_id:
