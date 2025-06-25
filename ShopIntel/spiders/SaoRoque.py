@@ -3,7 +3,7 @@ from ShopIntel.items import ShopintelItem
 
 
 class PrecoHunterSpider(scrapy.Spider):
-    name = "sao_roque"
+    name = "SaoRoque"
     domains = "https://supersaoroque.com.br"
     store_dict = {}
     list_id = []

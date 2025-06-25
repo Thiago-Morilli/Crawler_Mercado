@@ -20,8 +20,8 @@ class ShopintelPipeline:
             name VARCHAR(200), 
             id INT,
             sku VARCHAR(50),
-            price INT,
-            pricefrom INT,
+            price FLOAT,
+            pricefrom FLOAT ,
             ean VARCHAR(100)
             )''' 
         )

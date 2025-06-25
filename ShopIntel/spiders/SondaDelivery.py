@@ -1,6 +1,6 @@
 import scrapy
 import json
-
+from ShopIntel.items import ShopintelItem
 
 class PrecoHunterSpider(scrapy.Spider):
     name = "SondaDelivery"
@@ -44,11 +44,14 @@ class PrecoHunterSpider(scrapy.Spider):
         json_info = json.loads(path_json)
 
         data = {
-            "Name": json_info["name"],
-            "Sku": json_info["sku"],
-            "Image": json_info["image"],
+            "name": json_info["name"],
+            "sku": json_info["sku"],
             "price": json_info["offers"]["price"]
         }
+
+        yield ShopintelItem(
+            data
+        )
 
     def pagination(self, response):
 
