@@ -56,8 +56,9 @@ class PrecoHunterSpider(scrapy.Spider):
             }
         )
 
+
     def products(self, response):
-       
+        print(response.text)
         meta = response.meta
         category = meta["category"]
         page = meta["page"]
@@ -95,4 +96,5 @@ class PrecoHunterSpider(scrapy.Spider):
 
             if page != next_page:
                 yield from self.request_product(category, page+1)
+                
 
