@@ -76,7 +76,6 @@ class PrecoHunterSpider(scrapy.Spider):
             else:
                 ean = None
 
-        id = None
         data_products = {
                 "name": response.xpath('//div[@class="column main"]/div[@class="product-info-main"]/div/h1/span/text()').get(),
                 "price": price.replace(",","."),
