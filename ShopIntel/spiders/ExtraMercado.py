@@ -58,7 +58,7 @@ class PrecoHunterSpider(scrapy.Spider):
 
 
     def products(self, response):
-        print(response.text)
+        
         meta = response.meta
         category = meta["category"]
         page = meta["page"]
