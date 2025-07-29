@@ -40,6 +40,7 @@ class PrecoHunterSpider(scrapy.Spider):
     def products(self, response):
 
         path_json = response.xpath('//script[@type="application/ld+json"]/text()').get()
+        print(path_json)
         json_info = json.loads(path_json)
 
         data = {
@@ -53,7 +54,7 @@ class PrecoHunterSpider(scrapy.Spider):
 
 
 
-
+            
 
 
 
