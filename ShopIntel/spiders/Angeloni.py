@@ -39,8 +39,8 @@ class PrecoHunterSpider(scrapy.Spider):
                 )
 
     def request_products(self, response):
-               # itmes = response.xpath()
+                items = response.xpath('//a[@class="vtex-product-summary-2-x-clearLink vtex-product-summary-2-x-clearLink--column-shelf vtex-product-summary-2-x-clearLink--noquick h-100 flex flex-column"]')
 
-                print(response)
+                print(items)
 
     
