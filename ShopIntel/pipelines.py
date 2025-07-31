@@ -31,7 +31,7 @@ class ShopintelPipeline(SQLAlchemyMethods):
     #         pricefrom FLOAT ,
     #         ean VARCHAR(100)
     #         )''' 
-    #     )
+    #     ) 
 
     #     db_connection.commit()      
 

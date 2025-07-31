@@ -1,8 +1,6 @@
 
 import scrapy
-import json
-
-
+from ShopIntel.items import ShopintelItem
 
 class PrecoHunterSpider(scrapy.Spider):
     name = "Nordestao"
@@ -84,8 +82,6 @@ class PrecoHunterSpider(scrapy.Spider):
                 "price": price,
                 "pricefrom": pricefrom
             }
-            print("*****************************************************************")
-            print(page)
-            print(data_product) 
+            yield ShopintelItem(data_product)
 
             yield from self.request_products(id, page+1)
