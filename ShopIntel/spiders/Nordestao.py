@@ -46,7 +46,7 @@ class PrecoHunterSpider(scrapy.Spider):
 
             yield from self.request_products(id)
 
-    def request_products(self, id, page=0):
+    def request_products(self, id, page=1):
         yield scrapy.Request(
             url=f"https://services.se1.vipcommerce.com.br/api-admin/v1/org/52/filial/1/centro_distribuicao/4/loja/classificacoes_mercadologicas/departamentos/{id}/produtos?page={page}&",
             method="GET",
@@ -58,23 +58,34 @@ class PrecoHunterSpider(scrapy.Spider):
             }
         )
     def products(self, response):
+        page = response.meta["page"]
+        id = response.meta["id"]
         for data_json in response.json()["data"]:
             price = data_json["preco"]
             special_price = data_json["oferta"]
 
+            stock = data_json["disponivel"]
+            if stock != True:
+                continue
+
             if special_price:
                 price_offer = special_price["preco_oferta"]
+                pricefrom = data_json["preco"]
 
                 if price > price_offer:
-                    offer = price_offer
+                    price = price_offer
             else:
-                offer = None
+                pricefrom = None
 
             data_product = {
                 "name": data_json["descricao"],
                 "ean": data_json["codigo_barras"],
                 "sku": data_json["sku"],
                 "price": price,
-                "pricefrom": offer
+                "pricefrom": pricefrom
             }
+            print("*****************************************************************")
+            print(page)
             print(data_product) 
+
+            yield from self.request_products(id, page+1)
