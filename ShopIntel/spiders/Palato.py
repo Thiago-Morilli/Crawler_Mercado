@@ -34,8 +34,11 @@ class PrecoHunterSpider(scrapy.Spider):
     
     def product(self, response):
             
-            data_product = {
-                "name": response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/h1/text()').get(),
-                "sku": response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/div[@class="product-info"]/div/span/text()').getall()[1].replace("\n", "").strip(),
-            }
-            print(data_product)
+            price_offer = response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/div[@class="product-info"]/div[@class="prices-discount"]/div/div/span[@class="price"]').get()
+            if price_offer:
+                print(price_offer.strip())
+            """  data_product = {
+                    "name": response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/h1/text()').get(),
+                    "sku": response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/div[@class="product-info"]/div/span/text()').getall()[1].replace("\n", "").strip(),
+                    "price": response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/div[@class="product-info"]/div[@class="prices-discount"]/div[@class="pricesGeneral"]/h2/span/text()').get().replace("R$", "").strip(),
+                }""" 
