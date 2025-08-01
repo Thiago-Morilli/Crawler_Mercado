@@ -1,7 +1,4 @@
 import scrapy
-import json
-
-
 
 class PrecoHunterSpider(scrapy.Spider):
     name = "Angeloni"
