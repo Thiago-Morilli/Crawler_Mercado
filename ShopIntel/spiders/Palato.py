@@ -32,13 +32,27 @@ class PrecoHunterSpider(scrapy.Spider):
                         callback=self.product,                        
                     )
     
-    def product(self, response):
+    def product(self, response):  
+            price_raw = response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/div[@class="product-info"]/div[@class="prices-discount"]/div[@class="pricesGeneral"]/h2/span/text()').get()
+            if price_raw != None:
+                price = price_raw.replace("R$", "").strip()
+            else:
+                price = response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/div[@class="product-info"]/div[@class="prices-discount"]/div[@class="pricesGeneral"]/div/span/text()').get().replace("R$", "").strip()
+
             
-            price_offer = response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/div[@class="product-info"]/div[@class="prices-discount"]/div/div/span[@class="price"]').get()
-            if price_offer:
-                print(price_offer.strip())
-            """  data_product = {
+            pricefrom = response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/div[@class="product-info"]/div[@class="prices-discount"]/div/div/span[@class="price"]/text()').get()
+            if pricefrom:  
+                pricefrom = pricefrom.replace("R$", "").strip()
+                    
+                if pricefrom > price:
+                    offer = pricefrom
+            else:
+                offer = None
+
+            data_product = {
                     "name": response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/h1/text()').get(),
                     "sku": response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/div[@class="product-info"]/div/span/text()').getall()[1].replace("\n", "").strip(),
-                    "price": response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/div[@class="product-info"]/div[@class="prices-discount"]/div[@class="pricesGeneral"]/h2/span/text()').get().replace("R$", "").strip(),
-                }""" 
+                    "price": price,
+                    "pricefrom": offer
+                 }
+        
