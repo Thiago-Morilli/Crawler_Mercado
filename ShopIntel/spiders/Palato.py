@@ -23,15 +23,23 @@ class PrecoHunterSpider(scrapy.Spider):
                         method="GET",
                         callback=self.request_products,                        
                     )
+            
+    def request_page(self, page):
+        yield scrapy.Request(
+            url=page,
+            method="GET",
+            callback=self.request_products,
+            
+        )
 
     def request_products(self, response):
         for items in response.xpath('//div[@class="card-product-filter d-flex flex-wrap"]/div/div/div[@class="item-image product"]/a/@href').getall():
-            yield scrapy.Request(
+           yield scrapy.Request(
                         url=items,
                         method="GET",
                         callback=self.product,                        
                     )
-    
+        yield from self.pagination(response)
     def product(self, response):  
             price_raw = response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/div[@class="product-info"]/div[@class="prices-discount"]/div[@class="pricesGeneral"]/h2/span/text()').get()
             if price_raw != None:
@@ -55,4 +63,8 @@ class PrecoHunterSpider(scrapy.Spider):
                     "price": price,
                     "pricefrom": offer
                  }
-        
+            
+    def pagination(self, response):
+        page = response.xpath('//nav[@aria-label="Page navigation example"]/ul/li[@title="Próxima"]/a/@href').get()
+        if page:
+            yield from self.request_page(page)
