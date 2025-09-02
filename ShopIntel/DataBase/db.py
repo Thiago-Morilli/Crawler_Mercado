@@ -1,43 +1,126 @@
-from sqlalchemy import create_engine, text, Column, Integer, String, Float, ForeignKey
-from sqlalchemy.orm import declarative_base, relationship, sessionmaker
-import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-from ShopIntel.DataBase.test import Base
+import sys
+import sqlalchemy as sal
+from decimal import Decimal
+from sqlalchemy.engine import url
+from sqlalchemy.orm import sessionmaker
 
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from ShopIntel.DataBase.models import Base
 
 class SQLAlchemyDataPipeline:
     """
     SQLAlchemy Data Pipeline Class
     """
-    user = os.getenv("mysqluser")
-    password = os.getenv("mysqlpassword")
-    host = os.getenv("mysqlhost")
-    db_name = 'Products_Markets'
-    print(user)
 
     def __init__(self):
-        self.engine = self.connect_engine()
-        self.Session = sessionmaker(bind=self.engine)
-        self.session = self.Session()
+        self.session = self.connect_engine()
 
     def connect_engine(self):
-        engine_base = create_engine(f'mysql+pymysql://{self.user}:{self.password}@{self.host}', echo=True)
-        with engine_base.connect() as conn:
-            conn.execute(text(f"CREATE DATABASE IF NOT EXISTS {self.db_name}"))
-            conn.execute(text(f"USE {self.db_name}"))
-        # Agora conecta ao banco
-        engine = create_engine(f'mysql+pymysql://{self.user}:{self.password}@{self.host}/{self.db_name}', echo=True)
+
+        connect_url = url.URL(
+            drivername=os.getenv("psqldrivername"),
+            username="postgres",
+            password=os.getenv("psqlpassword"),
+            host=os.getenv("psqlhost"),
+            database="postgres",
+            port=5432,
+            query={}
+        )
+
+        engine = sal.create_engine(connect_url)
         Base.metadata.create_all(engine)
-        return engine
+
+        session = sessionmaker(autoflush=True)
+        session.configure(bind=engine)
+
+        return session()
+
+
+
 
 class SQLAlchemyMethods(SQLAlchemyDataPipeline):
+    exclude_fields = ["_sa_instance_state", "password", "created_at"]
 
+    def __exclude_data(self, query, properties):
+        data = {}
+        raw = query.__dict__
+
+        for key in raw.keys():
+            if key not in self.exclude_fields:
+                data[key] = self.__process_data(raw[key])
+
+        if not properties:
+            return data
+        else:
+            filtered_data = {}
+            for property in properties:
+                filtered_data[property] = data[property]
+            return filtered_data
+
+    def __process_data(self, data):
+        if isinstance(data, Decimal):
+            return float(data)
+        elif isinstance(data, int):
+            return int(data)
+        elif not data:
+            return None
+        else:
+            return str(data)
+        
+    def __process_query_data(self, query, properties, join=False):
+        if not isinstance(query, list):
+            return self.__exclude_data(query, properties)
+
+        if not join:
+            data = list(map(lambda row: self.__exclude_data(row, properties), query))
+        else:
+            data = []
+
+            for table in query:
+                dict = {}
+                for row in table:
+                    dict[str(row.__table__)] = self.__exclude_data(row, properties)
+                data.append(dict.copy())
+
+        return data
+    
     def insert_one(self, item):
         self.session.add(item)
         self.session.commit()
-        print("k"*100)
 
         return {
             "id": item.id
         }
+    
+    def select_one(self, model, filter, properties=[]):
+        query = self.session.query(model).filter(filter).first()
+
+        if not query:
+            return None
+
+        data = self.__process_query_data(query, properties)
+
+        return data
+    
+    def select_one_with_update(self, model, filter):
+        return self.session.query(model).filter(filter).with_for_update().one()
+    
+    def select_all(self, model, filter, properties=None):
+        query = self.session.query(model).filter(filter).all()
+
+        if not query:
+            return []
+
+        return self.__process_query_data(query, properties)
+    
+    def select_all_with_join(self, models, joins, filter, properties=[]):
+        query = self.session.query(*models)
+
+        for join in joins:
+            query = query.join(*join)
+
+        query = query.filter(filter).all()
+
+        return self.__process_query_data(query, properties, True)

@@ -1,55 +1,50 @@
-
-from itemadapter import ItemAdapter
-"""import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))"""
+import sys
+
+from datetime import datetime
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from ShopIntel.DataBase.models import Products, ProductsEans, Stores
 from ShopIntel.DataBase.db import SQLAlchemyMethods
 
+class SQLAlchemyPipeline:
 
+    def __init__(self): 
+        self.db = SQLAlchemyMethods()
 
-class ShopintelPipeline(SQLAlchemyMethods):
+    def insert_stores(self, data):
+        existing = self.db.select_one(Stores, Stores.name == data["name"])
+        if existing:
+            return existing["id"]
+
+        stores = Stores(
+            name=data["name"],
+         
+        )
+        item = self.db.insert_one(stores)
+        return item["id"]
+
+    def insert_product(self, item, stores_id):
+        product = Products(
+            name=item["name"],
+            brand=item["brand"],
+            sku=item["sku"],
+            created_at=item.get("date", datetime.now()),
+            price=item.get("price_from"),
+            price_promotion=item["price"],
+            id_store=stores_id
+        )
+        item = self.db.insert_one(product)
+        return item["id"]
+
+    def insert_ean(self, product_id, ean):
+        ean_obj = ProductsEans(id_product=product_id, ean=ean)
+        self.db.insert_one(ean_obj)
+
 
     def process_item(self, item, spider):
-        SQLAlchemyMethods().insert_one(item)
+        stores_id = self.insert_stores(item.get("store"))
+        product_id = self.insert_product(item, stores_id)
+
+        self.insert_ean(product_id, item["ean"])
+
         return item
-
-        # self.save_mysql(item, spider)
-
-    # def save_mysql(self, item, spider):
-    #     connector = Mysql_Connector.Connection()
-    #     cursor = connector[0]
-    #     db_connection = connector[1]
-
-    #     self.name = spider.name
-
-    #     cursor.execute(
-    #        f'''CREATE TABLE IF NOT EXISTS {self.name}(
-    #         name VARCHAR(200), 
-    #         id INT,
-    #         sku VARCHAR(50),
-    #         price FLOAT,
-    #         pricefrom FLOAT ,
-    #         ean VARCHAR(100)
-    #         )''' 
-    #     ) 
-
-    #     db_connection.commit()      
-
-    #     insert_query = f"""
-    #                     INSERT INTO  {self.name}(name, id, sku, price, pricefrom, ean)
-    #                     VALUES (%s, %s, %s, %s, %s, %s)""" 
-        
-    #     cursor.execute(insert_query, [
-    #             item.get("name"),
-    #             item.get("id"),
-    #             item.get("sku"),
-    #             item.get("price"),
-    #             item.get("pricefrom"),
-    #             item.get("ean")
-
-    #     ])
-    #     db_connection.commit()
-    #     print("Dados salvos com sucesso!")
-
-    #     cursor.close()
-    #     db_connection.close()

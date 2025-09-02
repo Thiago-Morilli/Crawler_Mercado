@@ -3,7 +3,7 @@ from ShopIntel.items import ShopintelItem
 
 
 class PrecoHunterSpider(scrapy.Spider):
-    name = "SaoRoque"
+    name = "saoroque"
     domains = "https://supersaoroque.com.br"
     store_dict = {}
     list_id = []
@@ -46,6 +46,8 @@ class PrecoHunterSpider(scrapy.Spider):
                 category_id = data["codigo"]
                 
                 yield from self.request_products(store_id, category_id)
+                break
+            break
 
     def request_products(self, store_id, category_id, page=1):
         yield scrapy.Request(
@@ -84,16 +86,19 @@ class PrecoHunterSpider(scrapy.Spider):
             data_products = {
                 "name": items["descricao"],
                 "id": items["codigo"],
+                "brand": None,
+                "sku": None,
                 "ean": items["ean"],
                 "price": price,
-                "pricefrom": offer
+                "pricefrom": offer,
+                "store": {
+                    "name": "Supermercados São Roque",
+                }
             }
           
-            yield ShopintelItem(
-                data_products
-            )
+            yield data_products
          
 
-        for store_id in self.list_id:
-            if data_json != []:
-                yield from self.request_products(store_id, category_id, page+1)
+        # for store_id in self.list_id:
+        #     if data_json != []:
+        #         yield from self.request_products(store_id, category_id, page+1)
