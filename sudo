@@ -1,0 +1,8 @@
+● postgresql.service - PostgreSQL RDBMS
+     Loaded: loaded (/usr/lib/systemd/system/postgresql.service; enabled; preset: enabled)
+     Active: active (exited) since Sun 2025-08-24 20:57:17 WEST; 23s ago
+   Main PID: 15421 (code=exited, status=0/SUCCESS)
+        CPU: 2ms
+
+ago 24 20:57:17 thiago-morilli-Aspire3 systemd[1]: Starting postgresql.service - PostgreSQL RDBMS...
+ago 24 20:57:17 thiago-morilli-Aspire3 systemd[1]: Finished postgresql.service - PostgreSQL RDBMS.
