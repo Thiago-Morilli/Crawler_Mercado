@@ -36,7 +36,7 @@ class PrecoHunterSpider(scrapy.Spider):
                 "partner": "linx",
                 "page": page,
                 "resultsPerPage": 12,
-                "multiCategory": category,
+                "multiCategory": "alimentos",
                 "sortBy": "relevance",
                 "storeId": 483,
                 "customerPlus": True,
@@ -80,6 +80,7 @@ class PrecoHunterSpider(scrapy.Spider):
                 "id": item["id"],
                 "name": item["name"],
                 "sku": item["sku"],
+                "brand": item["brand"],
                 "price": price,
                 "pricefrom": offer
 
@@ -87,9 +88,7 @@ class PrecoHunterSpider(scrapy.Spider):
 
             
 
-            yield ShopintelItem(
-                    product_data
-                )
+            print(product_data)
                 
 
             next_page = response.json()["totalPages"]

@@ -47,13 +47,13 @@ class PrecoHunterSpider(scrapy.Spider):
             else:
                 price = response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/div[@class="product-info"]/div[@class="prices-discount"]/div[@class="pricesGeneral"]/div/span/text()').get().replace("R$", "").strip()
 
-            
             pricefrom = response.xpath('//div[@class="row"]/div[@class="col-lg-6 col-md-12 col-12 order-2"]/div[@class="product-info"]/div[@class="prices-discount"]/div/div/span[@class="price"]/text()').get()
             if pricefrom:  
                 pricefrom = pricefrom.replace("R$", "").strip()
                     
                 if pricefrom > price:
-                    offer = pricefrom
+                    offer = pricefrom 
+                    
             else:
                 offer = None
 
