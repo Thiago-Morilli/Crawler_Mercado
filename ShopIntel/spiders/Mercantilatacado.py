@@ -68,7 +68,7 @@ class PrecoHunterSpider(scrapy.Spider):
            
 
         yield scrapy.Request(
-            url="https://www.mercantilatacado.com.br/api/catalog_system/pub/products/search?fq=C:2&_from=0&_to=4",
+            url="https://www.mercantilatacado.com.br/api/catalog_system/pub/products/search?fq=C:2&_from=0&_to=15",
             method="GET",
             callback=self.products,
         )
@@ -85,6 +85,7 @@ class PrecoHunterSpider(scrapy.Spider):
                     "sku": item["items"][0]["itemId"],
                     "ean": item["items"][0]["ean"],
                     "price": item["items"][0]["sellers"][0]["commertialOffer"]["Installments"][0]["Value"],
+                    "pricefrom": item["items"][0]["sellers"][0]["commertialOffer"]["ListPrice"],
                   
                 }
             print(data_products)
