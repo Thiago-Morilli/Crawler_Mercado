@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ShopIntel.DataBase.models import Base
+from DataBase.models import Base
 
 class SQLAlchemyDataPipeline:
     """

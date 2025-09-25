@@ -65,30 +65,53 @@ class PrecoHunterSpider(scrapy.Spider):
                 "name": data_json["name"],
                 
             }
-           
+            yield from self.request_products(data_json["id"])
+
+    def request_products(self, id,page=1):
 
         yield scrapy.Request(
-            url="https://www.mercantilatacado.com.br/api/catalog_system/pub/products/search?fq=C:2&_from=0&_to=15",
+            url=f"https://www.mercantilatacado.com.br/api/catalog_system/pub/products/search?fq=C:{id}&_from={page}&_to=15",
             method="GET",
             callback=self.products,
+            meta={
+                "page": page,
+                "id": id
+            }
         )
     
     def products(self, response):
+
+        meta = response.meta
+        page = meta["page"]
+        id = meta["id"]
       
         for item in response.json():
 
-            
+            get_price = item["items"][0]["sellers"][0]["commertialOffer"]["Installments"]
+            if "[{" in get_price:
+                price = get_price[0]["Value"]
+            else:
+                price =  item["items"][0]["sellers"][0]["commertialOffer"]["Price"]
+                if price == 0:
+                    price = None
+
                 
             data_products = {
                     "name": item["items"][0]["name"],
                     "brand": item["brand"],
                     "sku": item["items"][0]["itemId"],
                     "ean": item["items"][0]["ean"],
-                    "price": item["items"][0]["sellers"][0]["commertialOffer"]["Installments"][0]["Value"],
+                    "price": price,
                     "pricefrom": item["items"][0]["sellers"][0]["commertialOffer"]["ListPrice"],
-                  
+                    "store": {
+                        "name": self.name,
+                    }
+                
                 }
-            print(data_products)
+            yield data_products
+    
+
+        yield from self.request_products(id, page + 1)
 
 
         
