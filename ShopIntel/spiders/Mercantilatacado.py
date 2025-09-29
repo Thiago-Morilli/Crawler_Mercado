@@ -19,6 +19,8 @@ class PrecoHunterSpider(scrapy.Spider):
     
     def start_requests(self):
 
+        
+
         payload = {
             "operationName": "pickupPoints",
             "variables": {},
