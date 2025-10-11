@@ -12,7 +12,7 @@ class Products(Base):
 
     __tablename__ = "products"
 
-    id = Column(INTEGER, primary_key=True, autoincrement=True)
+    id = Column(INTEGER, primary_key=True, autoincrement=True) 
     name = Column(VARCHAR(200), nullable=False)
     brand = Column(VARCHAR(200), default=None)
     sku = Column(VARCHAR(200), default=None)
@@ -24,7 +24,7 @@ class Products(Base):
 
 class ProductsEans(Base):
     """
-    Product Eans Database Model
+    Product Eans Database Model 
     """
 
     __tablename__ = "products_eans"

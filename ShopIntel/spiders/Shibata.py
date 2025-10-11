@@ -25,15 +25,29 @@ class PrecoHunterSpider(scrapy.Spider):
         yield scrapy.Request(
             url="https://services.vipcommerce.com.br/api-admin/v1/org/161/filial/1/centro_distribuicao/1/loja/classificacoes_mercadologicas/departamentos/arvore",
             method="GET",
-            callback=self.store_data,
+            callback=self.category,
             headers=self.headers,
         )
 
-    def store_data(self, response):
+    def category(self, response):
 
         for data in response.json()['data']:
             data_category =  {
                 "id": data["classificacao_mercadologica_id"],
                 "name": data["descricao"],
             }
-            print(data_category)
+
+    
+            yield from self.request_products(data_category["id"])
+
+    def request_products(self, id,page=1):
+        yield scrapy.Request(
+            url="https://services.vipcommerce.com.br/api-admin/v1/org/161/filial/1/centro_distribuicao/29/loja/classificacoes_mercadologicas/departamentos/1/produtos?page=1&",
+            method="GET",
+            callback=self.products,
+            headers=self.headers,
+        )
+    
+    def products(self, response):
+
+
