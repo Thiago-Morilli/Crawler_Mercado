@@ -49,5 +49,6 @@ class PrecoHunterSpider(scrapy.Spider):
         )
     
     def products(self, response):
+        pass
 
 
