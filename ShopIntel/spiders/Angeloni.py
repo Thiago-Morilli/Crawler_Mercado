@@ -39,4 +39,18 @@ class PrecoHunterSpider(scrapy.Spider):
             )
 
     def product(self, response):
-        print(response)
+
+        price_integer = response.xpath(
+            '//div[@style="height:auto"]/section/div/div/span[@class="superangeloni-store-theme-7-x-lowPrice"]/span/span[@class="superangeloni-store-theme-7-x-currencyInteger"]/text()'
+        ).get()
+        price_fraction = response.xpath(
+            '//div[@style="height:auto"]/section/div/div/span[@class="superangeloni-store-theme-7-x-lowPrice"]/span/span[@class="superangeloni-store-theme-7-x-currencyFraction"]/text()'
+        ).get()
+
+        data_products = {
+            "name": response.xpath(
+                '//div[@style="height:auto"]/div/div/div/h1/span/text()'
+            ).get(),
+            "price": f"{price_integer}.{price_fraction}",
+        }
+        print(data_products)
